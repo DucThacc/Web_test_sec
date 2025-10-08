@@ -1,12 +1,12 @@
 <?php 
 
 function insert_taikhoan($tenuser,$accountuser,$passuser,$mailuser,$teluser,$addressuser){
-    $sql="INSERT INTO tbl_user(tenUser,accountUser,passUser,emailUser,addressUser,telUser ) values ('$tenuser','$accountuser','$passuser','$mailuser','$addressuser','$teluser') ";
+    $sql="INSERT INTO tbl_user(tenUser,accountUser,passUser,emailUser,addressUser,telUser,decen) values ('$tenuser','$accountuser','$passuser','$mailuser','$addressuser','$teluser',0) ";
     pdo_execute($sql);
 }
 
 function insert_taikhoan_nguoidung($accountuser,$passuser){
-    $sql="INSERT INTO tbl_user(tenUser,accountUser,passUser) values ('$accountuser','$accountuser','$passuser') ";
+    $sql="INSERT INTO tbl_user(tenUser,accountUser,passUser,emailUser,addressUser,telUser,decen) values ('$accountuser','$accountuser','$passuser','', '', '', 0) ";
     pdo_execute($sql);
 }
 
@@ -47,6 +47,12 @@ function update_taikhoan_admin($iduser,$tenuser,$accountuser,$passuser,$emailuse
 function update_pass($new_pass,$iduser){
     $sql="UPDATE tbl_user SET  passUser='".$new_pass."' WHERE idUser=".$iduser;
     pdo_execute($sql);
+}
+
+function account_exists($accountuser){
+    $sql="SELECT 1 FROM tbl_user WHERE accountUser='".$accountuser."' LIMIT 1";
+    $sp=pdo_query_one($sql);
+    return $sp ? true : false;
 }
 
 function loadall_taikhoan($kyw){

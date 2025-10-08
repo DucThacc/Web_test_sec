@@ -90,9 +90,13 @@
                     $username = $_POST['username'];
                     $password = $_POST['password'];
                     $passwordRepeat = $_POST['password_a'];
-                    if ($password == $passwordRepeat) {                       
-                        insert_taikhoan_nguoidung($username,$password);
-                        $thongbao= 'Đăng ký thành công. Vui lòng đăng nhập';
+                    if ($password == $passwordRepeat) {
+                        if(account_exists($username)){
+                            $thongbao='<span class="required">*Tên đăng nhập đã tồn tại</span>';
+                        } else {                      
+                            insert_taikhoan_nguoidung($username,$password);
+                            $thongbao= 'Đăng ký thành công. Vui lòng đăng nhập';
+                        }
                     }else{
                         $thongbao='<span class="required">*Mật khẩu không giống nhau vui lòng đăng ký lại</span>';
                     }
