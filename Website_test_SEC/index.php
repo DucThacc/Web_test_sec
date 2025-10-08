@@ -110,7 +110,7 @@
                         $_SESSION['user']=$checkuser;
                         extract($_SESSION['user']);
                         if($decen == 1){
-                            echo '<meta http-equiv="refresh" content="0;url=../DoAnCoSo2/admin/">';
+                            echo '<meta http-equiv="refresh" content="0;url=admin/">';
                         }else{
                             echo '<meta http-equiv="refresh" content="0;url=index.php">';
                         }
