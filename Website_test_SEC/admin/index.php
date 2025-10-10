@@ -1,5 +1,8 @@
 <?php
 
+// Kiểm tra quyền admin trước khi load các model
+include "auth_check.php";
+
 include "../model/pdo.php";
 include "../model/danhmuc.php";
 include "../model/sanpham.php";
@@ -11,10 +14,7 @@ include "../model/binhluan.php";
 
 include("header.php");
 
-// if (isset($_SESSION['user']) && ($_SESSION['user'])) {
-//     extract($_SESSION['user']);
-//     if ($decen != 0 ) {
-        if (isset($_GET['act'])) {
+if (isset($_GET['act'])) {
             $act = $_GET['act'];
             switch ($act) {
                     /* Controller cho danh mục */
@@ -531,12 +531,6 @@ include("header.php");
 
             include "home.php";
         }
-//     }
-// } 
-
-// else {
-//     include "../admin/view/login/loginform.php";
-// }
 
 
 include "footer.php";

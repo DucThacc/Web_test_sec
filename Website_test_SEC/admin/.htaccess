@@ -1,0 +1,39 @@
+# Bảo mật thư mục admin
+# Chỉ cho phép truy cập từ localhost hoặc IP cụ thể
+# Order Deny,Allow
+# Deny from all
+# Allow from 127.0.0.1
+# Allow from ::1
+
+# Ngăn chặn truy cập trực tiếp vào các file PHP trong view
+<Files "*.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Cho phép truy cập index.php
+<Files "index.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Ngăn chặn truy cập vào các file cấu hình
+<Files "auth_check.php">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# Ẩn thông tin server
+ServerTokens Prod
+ServerSignature Off
+
+# Ngăn chặn directory listing
+Options -Indexes
+
+# Bảo mật headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>

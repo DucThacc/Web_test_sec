@@ -1,7 +1,10 @@
-<?php 
-    if(is_array($dm)){
-        extract($dm);
-    }
+<?php
+// Kiểm tra quyền admin cho tất cả file trong admin
+include "../../auth_check.php";
+
+if(is_array($dm)){
+    extract($dm);
+}
 ?>
 <div class="main-content">
                 <h3 class="title-page">
