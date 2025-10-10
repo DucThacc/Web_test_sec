@@ -1,7 +1,3 @@
-<?php
-// Kiểm tra quyền admin cho tất cả file trong admin
-include "../../auth_check.php";
-?>
 <div class="main-content">
                 <h3 class="title-page">
                     Danh mục

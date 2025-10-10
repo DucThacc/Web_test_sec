@@ -5,18 +5,18 @@
 
 ## Các thay đổi đã thực hiện
 
-### 1. File `admin/auth_check.php`
+### 1. Tích hợp bảo mật vào `admin/index.php`
 - Kiểm tra session user có tồn tại không
 - Kiểm tra quyền admin (decen = 1)
 - Chuyển hướng về trang đăng nhập nếu chưa đăng nhập
 - Hiện thông báo lỗi nếu không có quyền admin
 
 ### 2. Cập nhật tất cả file trong admin
-- `admin/index.php`: Thêm include auth_check.php
-- `admin/header.php`: Thêm bảo mật
-- `admin/footer.php`: Thêm bảo mật  
-- `admin/home.php`: Thêm bảo mật
-- Tất cả file trong `admin/view/`: Thêm bảo mật
+- `admin/index.php`: Tích hợp bảo mật trực tiếp
+- `admin/header.php`: Loại bỏ include auth_check.php
+- `admin/footer.php`: Loại bỏ include auth_check.php  
+- `admin/home.php`: Loại bỏ include auth_check.php
+- Tất cả file trong `admin/view/`: Loại bỏ include auth_check.php
 
 ### 3. File `.htaccess`
 - Ngăn chặn truy cập trực tiếp vào các file PHP trong view
@@ -38,15 +38,15 @@
 
 ## Test bảo mật
 
-Chạy file `test_security.php` để kiểm tra:
+Chạy file `test_admin.php` để kiểm tra:
 - Truy cập admin khi chưa đăng nhập
 - Truy cập admin với user thường
 - Truy cập admin với admin
 
 ## Lưu ý quan trọng
 
-1. **Không được xóa file `auth_check.php`** - Đây là file bảo mật chính
-2. **Không được comment out các dòng include auth_check.php** trong các file admin
+1. **Bảo mật được tích hợp trực tiếp vào `admin/index.php`** - Không cần file riêng
+2. **Không được comment out các dòng kiểm tra bảo mật** trong `admin/index.php`
 3. **Kiểm tra quyền admin dựa trên trường `decen`** trong database:
    - `decen = 0`: User thường
    - `decen = 1`: Admin
@@ -56,21 +56,20 @@ Chạy file `test_security.php` để kiểm tra:
 
 ```
 admin/
-├── auth_check.php          # File kiểm tra quyền chính
 ├── .htaccess              # Bảo mật server level
-├── index.php              # Include auth_check.php
-├── header.php             # Include auth_check.php
-├── footer.php             # Include auth_check.php
-├── home.php               # Include auth_check.php
+├── index.php              # Tích hợp bảo mật trực tiếp
+├── header.php             # Không cần bảo mật riêng
+├── footer.php             # Không cần bảo mật riêng
+├── home.php               # Không cần bảo mật riêng
 └── view/
-    ├── danhmuc/           # Tất cả file include ../../auth_check.php
-    ├── sanpham/           # Tất cả file include ../../auth_check.php
-    ├── taikhoan/          # Tất cả file include ../../auth_check.php
-    ├── pet/               # Tất cả file include ../../auth_check.php
-    ├── bill/              # Tất cả file include ../../auth_check.php
-    ├── adopt/             # Tất cả file include ../../auth_check.php
-    ├── rescue/            # Tất cả file include ../../auth_check.php
-    └── danhmucpet/        # Tất cả file include ../../auth_check.php
+    ├── danhmuc/           # Không cần bảo mật riêng
+    ├── sanpham/           # Không cần bảo mật riêng
+    ├── taikhoan/          # Không cần bảo mật riêng
+    ├── pet/               # Không cần bảo mật riêng
+    ├── bill/               # Không cần bảo mật riêng
+    ├── adopt/              # Không cần bảo mật riêng
+    ├── rescue/             # Không cần bảo mật riêng
+    └── danhmucpet/         # Không cần bảo mật riêng
 ```
 
 ## Kết quả

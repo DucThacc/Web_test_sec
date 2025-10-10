@@ -1,7 +1,5 @@
 <?php
-
-// Kiểm tra quyền admin trước khi load các model
-include "auth_check.php";
+session_start();
 
 include "../model/pdo.php";
 include "../model/danhmuc.php";
@@ -11,6 +9,23 @@ include "../model/pet.php";
 include "../model/danhmucpet.php";
 include "../model/cart.php";
 include "../model/binhluan.php";
+
+// Kiểm tra quyền admin
+if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
+    // Nếu chưa đăng nhập, chuyển về trang đăng nhập
+    header('Location: ../index.php?pg=login_register_form');
+    exit();
+}
+
+$user = $_SESSION['user'];
+if (!isset($user['decen']) || $user['decen'] != 1) {
+    // Nếu không phải admin, chuyển về trang chủ với thông báo
+    echo '<script>
+        alert("Bạn không có quyền truy cập trang này!");
+        window.location.href = "../index.php";
+    </script>';
+    exit();
+}
 
 include("header.php");
 
