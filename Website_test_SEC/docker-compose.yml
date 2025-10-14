@@ -1,6 +1,79 @@
 version: '3.8'
 
+networks:
+  wazuh_net:
+    driver: bridge
+
 services:
+  # --- CỤM DỊCH VỤ CỦA WAZUH ---
+  wazuh-indexer:
+    image: wazuh/wazuh-indexer:4.7.4
+    container_name: wazuh_indexer
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - INDEXER_NODE_NAME=indexer-1
+      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - INDEXER_PASSWORD_FILE=/run/secrets/indexer_password
+    volumes:
+      - indexer_data:/usr/share/wazuh-indexer/data
+    secrets:
+      - indexer_password
+    healthcheck:
+      test: ["CMD-SHELL", "curl -XGET -k -u 'admin:$(cat /run/secrets/indexer_password)' 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - wazuh_net
+
+  wazuh-manager:
+    image: wazuh/wazuh-manager:4.7.4
+    container_name: wazuh_manager
+    restart: always
+    ports:
+      - "1514:1514/udp"
+      - "1515:1515/tcp"
+      - "55000:55000/tcp"
+    depends_on:
+      wazuh-indexer:
+        condition: service_healthy
+    environment:
+      - WAZUH_INDEXER_URL=https://wazuh-indexer:9200
+      - WAZUH_API_PASSWORD_FILE=/run/secrets/api_password
+      - WAZUH_INDEXER_PASSWORD_FILE=/run/secrets/indexer_password
+    volumes:
+      - manager_config:/var/ossec/etc
+      - manager_logs:/var/ossec/logs
+      - manager_queue:/var/ossec/queue
+      - manager_var:/var/ossec/var
+    secrets:
+      - api_password
+      - indexer_password
+    networks:
+      - wazuh_net
+
+  wazuh-dashboard:
+    image: wazuh/wazuh-dashboard:4.7.4
+    container_name: wazuh_dashboard
+    restart: always
+    ports:
+      - "8443:5601" # Truy cập giao diện Wazuh qua cổng 8443 (HTTPS)
+    depends_on:
+      - wazuh-indexer
+      - wazuh-manager
+    environment:
+      - WAZUH_INDEXER_URL=https://wazuh-indexer:9200
+      - WAZUH_API_URL=https://wazuh-manager:55000
+      - OPENSEARCH_USERNAME=admin
+      - OPENSEARCH_PASSWORD_FILE=/run/secrets/indexer_password
+    secrets:
+      - indexer_password
+    networks:
+      - wazuh_net
+
+  # --- CỤM DỊCH VỤ WEB APP CỦA BẠN ---
   web:
     build: .
     container_name: php_web
@@ -15,6 +88,8 @@ services:
       - MYSQL_USER=root
       - MYSQL_PASSWORD=123456
       - MYSQL_DATABASE=web_db
+    networks:
+      - wazuh_net
 
   db:
     image: mysql:8.0
@@ -26,6 +101,54 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./dacs2.sql:/docker-entrypoint-initdb.d/dacs2.sql
+    networks:
+      - wazuh_net
 
 volumes:
+  # Wazuh volumes
+  indexer_data:
+  manager_config:
+  manager_logs:
+  manager_queue:
+  manager_var:
+  # Your app volume
   db_data:
+
+secrets:
+  indexer_password:
+    file: ./wazuh_secrets/indexer_password.txt
+  api_password:
+    file: ./wazuh_secrets/api_password.txt
+
+
+# version: '3.8'
+
+# services:
+#   web:
+#     build: .
+#     container_name: php_web
+#     ports:
+#       - "80:80"
+#     volumes:
+#       - .:/var/www/html
+#     depends_on:
+#       - db
+#     environment:
+#       - MYSQL_HOST=db
+#       - MYSQL_USER=root
+#       - MYSQL_PASSWORD=123456
+#       - MYSQL_DATABASE=web_db
+
+#   db:
+#     image: mysql:8.0
+#     container_name: mysql_db
+#     restart: always
+#     environment:
+#       MYSQL_ROOT_PASSWORD: 123456
+#       MYSQL_DATABASE: web_db
+#     volumes:
+#       - db_data:/var/lib/mysql
+#       - ./dacs2.sql:/docker-entrypoint-initdb.d/dacs2.sql
+
+# volumes:
+#   db_data:
