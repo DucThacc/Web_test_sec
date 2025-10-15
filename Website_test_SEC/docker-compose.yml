@@ -21,7 +21,8 @@ services:
     secrets:
       - indexer_password
     healthcheck:
-      test: ["CMD-SHELL", "curl -XGET -k -u 'admin:$(cat /run/secrets/indexer_password)' 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s'"]
+      # SỬA LỖI: Thêm một dấu $ nữa trước (cat...) để Docker Compose không hiểu nhầm là biến
+      test: ["CMD-SHELL", "curl -XGET -k -u 'admin:$$(cat /run/secrets/indexer_password)' 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s'"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -120,6 +121,7 @@ secrets:
   api_password:
     file: ./wazuh_secrets/api_password.txt
 
+# XÓA BỎ PHẦN CẤU HÌNH CŨ BÊN DƯỚI ĐỂ TRÁNH NHẦM LẪN
 
 # version: '3.8'
 
