@@ -14,7 +14,7 @@ services:
       - "9200:9200"
     environment:
       - INDEXER_NODE_NAME=indexer-1
-      - "OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g"
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
       - INDEXER_PASSWORD_FILE=/run/secrets/indexer_password
     volumes:
       - indexer_data:/usr/share/wazuh-indexer/data
